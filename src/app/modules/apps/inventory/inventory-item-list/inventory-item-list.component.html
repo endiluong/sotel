@@ -1,0 +1,389 @@
+<div class="m-portlet">
+  <div class="m-portlet__body m-portlet__body--no-padding">
+    <div class="row m-row--no-padding m-row--col-separator-xl">
+      <div class="col-xl-5"><app-inventory-stat [dataSource]="inventoryDataSource"></app-inventory-stat></div>
+      <div class="col-xl-7">
+        <app-inventory-doughnut-chart [dataSource]="inventoryDataSource"></app-inventory-doughnut-chart>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STYCKY PORTLET CONTROL | See structure => /metronic/sticky-form-actions -->
+<m-portlet
+  [options]="{ headLarge: true }"
+  [loading$]="inventoryDataSource.loading$ || categoryDataSource.loading$ || unitDataSource.loading$"
+>
+  <!-- PORTLET LOADING | Binded to TABLE Datasource -->
+  <!-- See prop => '../../_core/models/data-sources/_base.datasource.ts' (loading$) -->
+
+  <!-- start::Header (attributtes: mPortletHeadTitle|mPortletHeadTools) -->
+  <ng-container mPortletHeadTitle>
+    <div class="m-portlet__head-title">
+      <h3 class="m-portlet__head-text">
+        <span translate="INVENTORY.INVENTORYITEMLIST.INVENTORYITEM_LIST">Inventory Item List</span>
+        <div class="m-portlet__head-desc"></div>
+        <div class="m-portlet__head-desc">
+          <span class="ml-3"> - </span>
+          <span class="summary__text">
+            Total Base Price:
+            <strong class="summary__text-value">{{
+              inventoryDataSource.basePriceTotalsSubject | async | number
+            }}</strong>
+            (VND)</span
+          >
+          <span class="ml-3"> - </span>
+          <span class="summary__text">
+            Total Sell Price:
+            <strong class="summary__text-value">{{
+              inventoryDataSource.sellPriceTotalsSubject | async | number
+            }}</strong>
+            (VND)</span
+          >
+        </div>
+      </h3>
+    </div>
+    <!-- For localisations we use @ngx-translate | See off. documentations => https://github.com/ngx-translate/core -->
+    <!-- Localization libraries (en/fr) are here => '../../../.././config/i18n/en.ts|fr.ts' -->
+  </ng-container>
+
+  <ng-container mPortletHeadDetails>
+    <!-- Buttons (Material Angular) | See off.documenations 'https://material.angular.io/components/button/overview' -->
+    <!-- mat-raised-button | Rectangular contained button w/ elevation  -->
+  </ng-container>
+
+  <ng-container mPortletHeadTools>
+    <button
+      (click)="importInventory()"
+      mat-raised-button
+      matTooltip="Import item to inventory"
+      color="primary"
+      type="button"
+    >
+      <span translate="INVENTORY.INVENTORYITEMLIST.IMPORT_INVENTORYITEM">Import Inventory</span>
+    </button>
+    <!-- Buttons (Material Angular) | See off.documenations 'https://material.angular.io/components/button/overview' -->
+    <!-- mat-raised-button | Rectangular contained button w/ elevation  -->
+  </ng-container>
+  <!-- end::Header -->
+
+  <!-- start::Body (attribute: mPortletBody) -->
+  <ng-container mPortletBody>
+    <!-- start::FILTERS & GROUP ACTIONS -->
+    <div class="m-form">
+      <!-- start::FILTERS -->
+      <div class="m-form__filtration">
+        <div class="row align-items-center">
+          <div class="col-md-2 m--margin-bottom-10-mobile">
+            <!-- 'm  margin-bottom-10-mobile' for adaptive make-up  -->
+            <div class="m-form__control">
+              <mat-form-field class="mat-form-field-fluid">
+                <mat-select [(value)]="filterProductCategory" (selectionChange)="loadInventoriesList()">
+                  <mat-option value="">All</mat-option>
+                  <mat-option
+                    *ngFor="let category of (categoryDataSource.entitySubject | async)"
+                    value="{{ category.id }}"
+                    >{{ category.name }}</mat-option
+                  >
+                </mat-select>
+                <mat-hint align="start"> <strong>Filter</strong> by Category</mat-hint>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="col-md-2 m--margin-bottom-10-mobile">
+            <div class="m-form__control">
+              <mat-form-field class="mat-form-field-fluid">
+                <mat-select [(value)]="filterProductUnit" (selectionChange)="loadInventoriesList()">
+                  <mat-option value="">All</mat-option>
+                  <mat-option *ngFor="let unit of (unitDataSource.entitySubject | async)" value="{{ unit.id }}">{{
+                    unit.name
+                  }}</mat-option>
+                </mat-select>
+                <mat-hint align="start"> <strong>Filter</strong> by Unit Of Measure</mat-hint>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="col-md-2 m--margin-bottom-10-mobile">
+            <mat-form-field class="mat-form-field-fluid">
+              <input matInput placeholder="Search inventory" #searchInput placeholder="Search" />
+              <mat-hint align="start"> <strong>Search</strong> in product name and code</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      <!-- end::FILTERS -->
+
+      <!-- start::GROUP ACTIONS -->
+      <!-- Group actions list: 'Delete selected' | 'Fetch selected' | 'Update status for selected' -->
+      <!-- Group actions are shared for all LISTS | See '../../_shared' folder -->
+      <div
+        class="row align-items-center collapse m-form__group-actions m--margin-top-20 m--margin-bottom-20"
+        [ngClass]="{ show: selection.selected.length > 0 }"
+      >
+        <!-- We show 'Group Actions' div if smth are selected -->
+        <div class="col-xl-12">
+          <div class="m-form__group m-form__group--inline">
+            <div class="m-form__label m-form__label-no-wrap">
+              <label class="m--font-bold m--font-danger-">
+                <span translate="INVENTORY.COMMON.SELECTED_RECORDS_COUNT"></span> {{ selection.selected.length }}
+              </label>
+              <!-- selectedCountsTitle => function from codeBehind (customer-list.component.ts file) -->
+              <!-- selectedCountsTitle => just returns title of selected items count -->
+              <!-- for example: Selected records count: 4 -->
+            </div>
+            <div class="m-form__control m-form__group--inline">
+              <button
+                (click)="deleteInventories()"
+                mat-raised-button
+                color="accent"
+                matTooltip="Delete selected inventory"
+              >
+                <mat-icon>delete</mat-icon> Delete All</button
+              >&nbsp;<!-- Call 'delete-entity-dialog' from _shared folder -->
+              <button (click)="fetchInventories()" mat-raised-button matTooltip="Fetch selected customers">
+                <mat-icon>clear_all</mat-icon> Fetch Selected</button
+              >&nbsp;<!-- Call 'fetch-entity-dialog' from _shared folder -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end::GROUP ACTIONS -->
+    </div>
+    <!-- end::FILTERS & GROUP ACTIONS -->
+
+    <!-- MATERIAL TABLE | Binded to datasources -->
+    <!-- See off.documentations 'https://material.angular.io/components/table/overview' -->
+    <div class="mat-table__wrapper">
+      <mat-table
+        class="lmat-elevation-z8"
+        [dataSource]="inventoryDataSource"
+        matSort
+        matSortActive="productName"
+        matSortDirection="asc"
+        matSortDisableClear
+      >
+        <!-- START::Expand Toggle Column -->
+        <ng-container matColumnDef="expandToggle">
+          <mat-header-cell *matHeaderCellDef class="mat-column-checkbox"> </mat-header-cell>
+          <mat-cell *matCellDef="let row" class="mat-column-checkbox">
+            <mat-icon *ngIf="row == expandedRow">expand_less</mat-icon>
+            <mat-icon *ngIf="row != expandedRow">expand_more</mat-icon>
+          </mat-cell>
+        </ng-container>
+        <!-- END::Expand Toggle Column -->
+
+
+        <!-- START::Checkbox Column -->
+        <!-- Table with selection -->
+        <!-- https://run.stackblitz.com/api/angular/v1?file=app%2Ftable-selection-example.ts -->
+        <ng-container matColumnDef="select">
+          <mat-header-cell *matHeaderCellDef class="mat-column-checkbox">
+            <mat-checkbox
+              (change)="$event ? masterToggle() : null"
+              [checked]="selection.hasValue() && isAllSelected()"
+              [indeterminate]="selection.hasValue() && !isAllSelected()"
+            >
+            </mat-checkbox>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row" class="mat-column-checkbox">
+            <mat-checkbox
+              (click)="$event.stopPropagation()"
+              (change)="$event ? selection.toggle(row) : null"
+              [checked]="selection.isSelected(row)"
+            >
+            </mat-checkbox>
+          </mat-cell>
+        </ng-container>
+        <!-- END::Checkbox Column -->
+
+
+        <!-- START::Product Code Column -->
+        <ng-container matColumnDef="productCode">
+          <!-- ATTRIBUTE mat-sort-header  for sorting | https://material.angular.io/components/sort/overview -->
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Code</mat-header-cell>
+          <mat-cell *matCellDef="let inventory">{{ inventory.productCode }}</mat-cell>
+        </ng-container>
+        <!-- END::Product Code Column -->
+
+
+        <!-- START::Product Name Column -->
+        <ng-container matColumnDef="productName">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Product Name</mat-header-cell>
+          <mat-cell *matCellDef="let inventory">{{ inventory.productName }}</mat-cell>
+        </ng-container>
+        <!-- END::Product Name Column -->
+
+
+        <!-- START::Base Price Column -->
+        <ng-container matColumnDef="basePrice">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Base Price</mat-header-cell>
+          <mat-cell *matCellDef="let inventory">{{ inventory.basePrice | number }}</mat-cell>
+        </ng-container>
+        <!-- END::Base Price Column -->
+
+
+        <!-- START::Sell Price Column -->
+        <ng-container matColumnDef="sellPrice">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Sell Price</mat-header-cell>
+          <mat-cell *matCellDef="let inventory">{{ inventory.sellPrice | number }}</mat-cell>
+        </ng-container>
+        <!-- END::Sell Price Column -->
+
+
+        <!-- START::Category Column -->
+        <ng-container matColumnDef="category">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Category</mat-header-cell>
+          <mat-cell *matCellDef="let inventory">
+            <span class="m-badge m-badge--{{ getItemCssClassByCategory(inventory.productCategoryId) }} m-badge--wide">{{
+              inventory.productCategoryName
+            }}</span>
+          </mat-cell>
+        </ng-container>
+        <!-- END::Category Column -->
+
+
+        <!-- START::Category Column -->
+        <ng-container matColumnDef="unit">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Unit</mat-header-cell>
+          <mat-cell *matCellDef="let inventory">
+            <span class="m-badge m-badge--{{ getItemCssClassByUnit(inventory.unitId) }} m-badge--dot"></span>&nbsp;
+            <span class="m--font-bold m--font-{{ getItemCssClassByUnit(inventory.unitId) }}">{{
+              inventory.unitName
+            }}</span>
+          </mat-cell>
+        </ng-container>
+        <!-- END::Category Column -->
+
+        <!-- START::Is Homemade Column -->
+        <ng-container matColumnDef="isHomemade">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
+          <mat-cell *matCellDef="let inventory">
+            <span
+              class="m-badge m-badge--{{ getItemCssClassByIsHomeMade(inventory.productIsHomemade) }} m-badge--wide"
+              >{{ getItemStringByIsHomeMade(inventory.productIsHomemade) }}</span
+            >
+          </mat-cell>
+        </ng-container>
+        <!-- END::Is Homemade Column -->
+
+
+        <!-- START::Actions Column -->
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+          <mat-cell *matCellDef="let inventory">
+            <button mat-icon-button color="primary" matTooltip="Edit inventory" (click)="editInventory(inventory)">
+              <mat-icon control-notice="not-expand">create</mat-icon></button
+            >&nbsp;
+            <button
+              mat-icon-button
+              color="warn"
+              matTooltip="Delete inventory"
+              type="button"
+              (click)="deleteInventory(inventory)"
+            >
+              <mat-icon control-notice="not-expand">delete</mat-icon></button
+            >&nbsp;
+            <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More actions">
+              <mat-icon control-notice="not-expand">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item><mat-icon>description</mat-icon><span>view product details</span></button>
+              <button mat-menu-item><mat-icon>import_export</mat-icon><span>import/export product</span></button>
+            </mat-menu>
+          </mat-cell>
+        </ng-container>
+        <!-- END::Actions Column -->
+
+
+        <!-- START::Expanded Details Section -->
+        <ng-container matColumnDef="expandedDetail">
+          <mat-cell *matCellDef="let detail">
+            <div class="p-4">
+              <div class="m-demo" data-code-preview="true" data-code-html="true" data-code-js="false">
+                <div class="m-stack m-stack--hor m-stack--general">
+                  <div class="m-stack__item m-stack m-stack--ver m-stack--general m-stack--demo">
+                    <div class="m-stack__item m-stack__item--center m-stack__item--middle" style="width: 300px;">
+                      <h3>{{ detail.element.productName }}</h3>
+                      <img src="{{ detail.element.productImageUrl }}" class="detail-img" alt="" />
+                    </div>
+                    <div class="m-stack__item m-stack__item--fluid detail-section">
+                      <p><strong>Product Code: </strong>{{ detail.element.productCode }}</p>
+                      <p><strong>Expired Date: </strong>{{ detail.element.expiredDate | date }}</p>
+                      <p><strong>Category: </strong>{{ detail.element.unitName }}</p>
+                      <p><strong>Unit: </strong>{{ detail.element.unitName }}</p>
+                      <p><strong>Quantity: </strong>{{ detail.element.quantity }}</p>
+                      <p><strong>Position: </strong>{{ detail.element.position }}</p>
+                    </div>
+                    <div class="m-stack__item m-stack__item--fluid detail-section">
+                      <p><strong>Description: </strong>{{ detail.element.description }}</p>
+                      <p><strong>Note: </strong>{{ detail.element.note }}</p>
+                    </div>
+                  </div>
+
+                  <div class="m-stack__item m-stack m-stack--ver m-stack--general">
+                    <div class="m-stack__item m-stack__item--center m-stack__item--middle" style="width: 300px;">
+                    </div>
+                    <div class="m-stack__item m-stack__item--right m-stack__item--middle m-stack__item--fluid">
+                    </div>
+                    <div class="m-stack__item m-stack__item--right m-stack__item--middle m-stack__item--fluid detail-section-control">
+                      <button style="display: inline" class="btn btn-primary mr-2">Update Info</button>
+                      <button style="display: inline" class="btn btn-secondary mr-2">Print Code</button>
+                      <button style="display: inline" class="btn btn-danger">Delete</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-cell>
+        </ng-container>
+        <!-- END::Expanded Details Section -->
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+
+        <!-- Start::Row Cofig-->
+        <mat-row
+          matRipple
+          *matRowDef="let row; columns: displayedColumns"
+          (click)="rowSelect(row, $event)"
+          class="element-row"
+          [class.expanded]="expandedRow == row"
+        ></mat-row>
+        <mat-row
+          *matRowDef="let row; columns: ['expandedDetail']; when: isExpansionDetailRow"
+          [@detailExpand]="row.element == expandedRow ? 'expanded' : 'collapsed'"
+          style="overflow: hidden"
+        >
+        </mat-row>
+        <!-- End::Row Config-->
+      </mat-table>
+
+      <div class="mat-table__message" *ngIf="!inventoryDataSource.hasItems">No records found</div>
+      <!-- Message for empty data  -->
+    </div>
+
+    <!-- start: BOTTOM -->
+    <div class="mat-table__bottom">
+      <!-- MATERIAL SPINNER | Url: 'https://material.angular.io/components/progress-spinner/overview' -->
+      <mat-spinner
+        [diameter]="20"
+        *ngIf="
+          (inventoryDataSource.loading$ | async) ||
+          (categoryDataSource.loading$ | async) ||
+          (unitDataSource.loading$ | async)
+        "
+      ></mat-spinner>
+      <!-- MATERIAL PAGINATOR | Binded to dasources -->
+      <!-- See off.documentations 'https://material.angular.io/components/paginator/overview' -->
+      <mat-paginator
+        [pageSize]="15"
+        [pageSizeOptions]="[3, 5, 10, 15]"
+        [length]="inventoryDataSource.paginatorTotal$ | async"
+        [showFirstLastButtons]="true"
+      ></mat-paginator>
+    </div>
+    <!-- end: BOTTOM -->
+  </ng-container>
+  <!-- end::Body -->
+</m-portlet>

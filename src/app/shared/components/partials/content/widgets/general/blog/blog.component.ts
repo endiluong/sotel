@@ -1,0 +1,13 @@
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+
+@Component({
+  // tslint:disable-next-line:component-selector
+  selector: 'm-blog',
+  templateUrl: './blog.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class BlogComponent implements OnInit {
+  constructor() {}
+
+  ngOnInit() {}
+}

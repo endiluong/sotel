@@ -1,0 +1,107 @@
+<m-portlet [options]="{ headOverlay: true }">
+  <!-- use ng-container[mPortletHeadTitle] for the title -->
+  <ng-container mPortletHeadTitle>
+    <div class="m-portlet__head-title">
+      <h2 class="m-portlet__head-text m--font-light">
+        {{ data.name }}
+      </h2>
+    </div>
+  </ng-container>
+
+  <!-- use ng-container[mPortletHeadTools] for the top right toolbar content -->
+  <ng-container mPortletHeadTools>
+    <ul class="m-portlet__nav">
+      <li
+        class="m-portlet__nav-item m-dropdown m-dropdown--inline m-dropdown--arrow m-dropdown--align-right m-dropdown--align-push"
+        m-dropdown-toggle="hover"
+      >
+        <a
+          href="#"
+          class="m-portlet__nav-link m-dropdown__toggle dropdown-toggle btn btn--sm m-btn--pill m-btn btn-outline-light m-btn--hover-light"
+        >
+          Thao tác
+        </a>
+        <div class="m-dropdown__wrapper">
+          <span class="m-dropdown__arrow m-dropdown__arrow--right m-dropdown__arrow--adjust"></span>
+          <div class="m-dropdown__inner">
+            <div class="m-dropdown__body">
+              <div class="m-dropdown__content">
+                <ul class="m-nav">
+                  <li class="m-nav__section m-nav__section--first">
+                    <span class="m-nav__section-text">Kiểm tra hoá đơn</span>
+                  </li>
+                  <li class="m-nav__item">
+                    <a href="" class="m-nav__link">
+                      <i class="m-nav__link-icon flaticon-share"></i>
+                      <span class="m-nav__link-text">Xem hoạt động</span>
+                    </a>
+                  </li>
+                  <li class="m-nav__item">
+                    <a href="" class="m-nav__link">
+                      <i class="m-nav__link-icon flaticon-chat-1"></i>
+                      <span class="m-nav__link-text">Nhắn tin</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </ng-container>
+
+  <!-- use ng-container[mPortletBody] for the body content -->
+  <ng-container mPortletBody>
+    <div class="m-widget28">
+      <div class="m-widget28__pic m-portlet-fit--sides" *ngIf="data.status === 0"></div>
+      <div class="m-widget28__pic m-portlet-fit--sides bg-danger" *ngIf="data.status === 1"></div>
+      <div class="m-widget28__container">
+        <!-- begin::Nav pills -->
+        <ul class="m-widget28__nav-items nav nav-pills nav-fill" role="tablist">
+          <li class="m-widget28__nav-item nav-item">
+            <a class="nav-link " data-toggle="pill" href="#menu11"
+              ><span><i class="fa flaticon-pie-chart"></i></span><span>Đặt phòng</span></a
+            >
+          </li>
+          <li class="m-widget28__nav-item nav-item">
+            <a class="nav-link" data-toggle="pill" href="#menu21"
+              ><span><i class="fa flaticon-file-1"></i></span><span>Thanh toán </span></a
+            >
+          </li>
+          <li class="m-widget28__nav-item nav-item">
+            <a class="nav-link" data-toggle="pill" href="#menu31"
+              ><span><i class="fa flaticon-clipboard"></i></span><span>Thêm dịch vụ</span></a
+            >
+          </li>
+        </ul>
+        <!-- end::Nav pills -->
+
+        <!-- begin::Tab Content -->
+        <div class="m-widget28__tab tab-content">
+          <div id="menu11" class="m-widget28__tab-container tab-pane active">
+            <div class="m-widget28__tab-items">
+              <div class="m-widget28__tab-item">
+                <span>Tên phòng</span>
+                <span>{{ data.name }}</span>
+              </div>
+              <div class="m-widget28__tab-item">
+                <span>Loại phòng</span>
+                <span>{{ data.type }}</span>
+              </div>
+              <div class="m-widget28__tab-item">
+                <span>Giá</span>
+                <span>{{ data.price }}</span>
+              </div>
+              <div class="m-widget28__tab-item">
+                <span>Trạng thái</span>
+                <span>{{ statusResolver(data.status) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- end::Tab Content -->
+      </div>
+    </div>
+  </ng-container>
+</m-portlet>

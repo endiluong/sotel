@@ -1,0 +1,28 @@
+
+<!--begin:: Widgets/Stats2-1 -->
+<div class="m-widget1">
+  <div class="m-widget1__item" *ngFor="let model of models">
+    <div class="row m-row--no-padding align-items-center">
+      <div class="col">
+        <h3 class="m-widget1__title">{{ model.title }}</h3>
+        <span class="m-widget1__desc">{{ model.desc }}</span>
+      </div>
+      <div class="col m--align-right">
+        <span
+          class="m-widget1__number m--font-brand"
+          [ngClass]="{
+            'm--font-brand': model.color == 'brand',
+            'm--font-danger': model.color == 'danger',
+            'm--font-success': model.color == 'success',
+            'm--font-accent': model.color == 'accent'
+          }"
+        >
+          <span *ngIf="model.dataType == 'date'"> {{ model.value | async | date }} </span>
+          <span *ngIf="model.dataType == 'number'">{{ model.value | async | number }}</span>
+          {{ model.unit }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<!--end:: Widgets/Stats2-1 -->

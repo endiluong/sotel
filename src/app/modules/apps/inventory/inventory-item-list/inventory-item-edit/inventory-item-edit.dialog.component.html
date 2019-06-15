@@ -1,0 +1,162 @@
+<div
+  class="m-portlet"
+  [ngClass]="{ 'm-portlet--body-progress': viewLoading, 'm-portlet--body-progress-overlay': loadingAfterSubmit }"
+>
+  <div class="m-portlet__head">
+    <div class="m-portlet__head-caption">
+      <div class="m-portlet__head-title">
+        <span class="m-portlet__head-icon m--hide"> <i class="la la-gear"></i> </span>
+        <h3 class="m-portlet__head-text">{{ getTitle() }}</h3>
+      </div>
+    </div>
+  </div>
+  <form class="m-form" [formGroup]="inventoryItemForm">
+    <div class="m-portlet__body">
+      <div class="m-portlet__body-progress"><mat-spinner [diameter]="20"></mat-spinner></div>
+
+      <m-alert
+        *ngIf="hasFormErrors"
+        type="warn"
+        [duration]="30000"
+        [showCloseButton]="true"
+        (close)="onAlertClose($event)"
+      >
+        Oh snap! Change a few things up and try submitting again.
+      </m-alert>
+
+      <!-- START::Row 1 -->
+      <div class="form-group m-form__group row">
+        <div class="col-lg-4 m--margin-bottom-20-mobile">
+          <mat-form-field class="mat-form-field-fluid">
+            <input matInput formControlName="productCode"/>
+          </mat-form-field>
+        </div>
+        <div class="col-lg-4 m--margin-bottom-20-mobile">
+          <mat-form-field class="mat-form-field-fluid">
+            <input matInput formControlName="productName"/>
+          </mat-form-field>
+        </div>
+        <div class="col-lg-4 m--margin-bottom-20-mobile">
+          <mat-form-field class="mat-form-field-fluid">
+            <mat-select placeholder="Category" formControlName="productCategory">
+              <mat-option value="1">Category1</mat-option>
+              <mat-option value="2">Category2</mat-option>
+              <mat-option value="3">Category3</mat-option>
+              <mat-option value="4">Category4</mat-option>
+              <mat-option value="5">Category5</mat-option>
+              <mat-option value="6">Category6</mat-option>
+              <mat-option value="7">Category7</mat-option>
+              <mat-option value="8">Category8</mat-option>
+              <mat-option value="9">Category9</mat-option>
+              <mat-option value="10">Category10</mat-option>
+            </mat-select>
+            <mat-hint align="start"> <strong>Product Category</strong> </mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+      <!-- END::Row 1 -->
+
+      <div class="m-separator m-separator--dashed"></div>
+
+      <!-- START::Row 2 -->
+      <div class="form-group m-form__group row">
+        <div class="col-lg-4 m--margin-bottom-20-mobile">
+          <mat-form-field class="mat-form-field-fluid">
+            <mat-select placeholder="Unit" formControlName="unit">
+              <mat-option value="1">Unit1</mat-option>
+              <mat-option value="2">Unit2</mat-option>
+              <mat-option value="3">Unit3</mat-option>
+              <mat-option value="4">Unit4</mat-option>
+              <mat-option value="5">Unit5</mat-option>
+              <mat-option value="6">Unit6</mat-option>
+              <mat-option value="7">Unit7</mat-option>
+              <mat-option value="8">Unit8</mat-option>
+              <mat-option value="9">Unit9</mat-option>
+              <mat-option value="10">Unit10</mat-option>
+            </mat-select>
+            <mat-hint align="start"> <strong>Product Unit Of Measure</strong> </mat-hint>
+          </mat-form-field>
+        </div>
+        <div class="col-lg-4 m--margin-bottom-20-mobile">
+          <mat-form-field class="mat-form-field-fluid">
+            <input matInput placeholder="description" formControlName="description" />
+            <mat-hint align="start">Please enter <strong>description for this product</strong> </mat-hint>
+          </mat-form-field>
+        </div>
+        <div class="col-lg-4 m--margin-bottom-20-mobile">
+          <mat-form-field class="mat-form-field-fluid">
+            <input matInput [matDatepicker]="picker" placeholder="Choose product's expired date" formControlName="expiredDate" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-hint align="start">Please enter <strong>Expired Date</strong> in 'mm/dd/yyyy' format</mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+      <!-- END::Row 2 -->
+
+      <div class="m-separator m-separator--dashed"></div>
+
+      <!-- START::Row 3 -->
+      <div class="form-group m-form__group row">
+        <div class="col-lg-4 m--margin-bottom-20-mobile">
+          <mat-form-field class="mat-form-field-fluid">
+            <input type="number" matInput formControlName="basePrice" />
+						<mat-error>Base Price can not
+							<strong>a negative number</strong>
+						</mat-error>
+            <mat-hint align="start">Please enter <strong>Base Price for this product</strong> </mat-hint>
+          </mat-form-field>
+        </div>
+        <div class="col-lg-4 m--margin-bottom-20-mobile">
+          <mat-form-field class="mat-form-field-fluid">
+            <input type="number" matInput formControlName="sellPrice" />
+						<mat-error>Sell Price can not
+							<strong>a negative number</strong>
+						</mat-error>
+            <mat-hint align="start">Please enter <strong>Sell Price for this product</strong> </mat-hint>
+          </mat-form-field>
+        </div>
+        <div class="col-lg-4 m--margin-bottom-20-mobile">
+          <mat-form-field class="mat-form-field-fluid">
+            <input type="number" matInput formControlName="quantity" />
+						<mat-error>Quantity can not
+							<strong>a negative number</strong>
+						</mat-error>
+            <mat-hint align="start">Please enter <strong>Quantity for this product</strong> </mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+      <!-- END::Row 3 -->
+    </div>
+
+    <!-- START::Dialog Footer -->
+    <div class="m-portlet__foot m-portlet__no-border m-portlet__foot--fit">
+      <div class="m-form__actions m-form__actions--solid">
+        <div class="row text-right">
+          <div class="col-lg-12">
+            <button
+              type="button"
+              mat-raised-button
+              [mat-dialog-close]="data.animal"
+              cdkFocusInitial
+              matTooltip="Cancel changes"
+            >
+              Cancel</button
+            >&nbsp;
+            <button
+              type="button"
+              mat-raised-button
+              color="primary"
+              (click)="onSubmit()"
+              [disabled]="viewLoading"
+              matTooltip="Save changes"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END::Dialog Footer -->
+  </form>
+</div>

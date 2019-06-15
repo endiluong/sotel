@@ -1,0 +1,11 @@
+<!--Begin::Section-->
+<div class="m-portlet">
+  <div class="m-portlet__body ">
+    <div class=" row  m-row--col-separator-xl flex justify-around">
+      <div class="col-xl-4" *ngFor="let room of productsResult">
+        <m-finance-stats [data]="room" class="pl-5"></m-finance-stats>
+      </div>
+    </div>
+  </div>
+</div>
+<!--End::Section-->
